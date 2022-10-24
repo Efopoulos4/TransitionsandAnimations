@@ -23,58 +23,55 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    Action.TransitionType type;
+    String type;
     Animation rotateAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        type = null;
-
-        if (Action.hasActivated)
+        type = getIntent().getStringExtra("Key");
+        if (type != null) {
             activateAnimation();
+        }
     }
 
     private void activateAnimation() {
-        type = (Action.TransitionType) getIntent().getSerializableExtra(Action.KEY_TYPE);
+
         switch (type) {
-            case explode:
+            case "Explode":
                 Explode explodeTransition = new Explode();
                 explodeTransition.setDuration(500);
                 getWindow().setEnterTransition(explodeTransition);
                 break;
-            case slide:
-                Slide slideTransition = new Slide();
-                slideTransition.setDuration(500);
-                getWindow().setEnterTransition(slideTransition);
-                break;
-            case fade:
+            case "Fade":
                 Fade fadeTransition = new Fade();
-                fadeTransition.setDuration(500);
+                fadeTransition.setDuration(1000);
                 getWindow().setEnterTransition(fadeTransition);
                 break;
         }
     }
 
     public void explodeAnimation(View view) {
-        Action.hasActivated = true;
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
         Intent i = new Intent(this, getClass());
-        i.putExtra(Action.KEY_TYPE, Action.TransitionType.explode);
+        i.putExtra("Key", "Explode");
         startActivity(i, options.toBundle());
+
     }
+
     public void rotateAnimation(View view) {
         rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         view.startAnimation(rotateAnimation);
     }
+
     public void fadeAnimation(View view) {
-        Action.hasActivated = true;
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this);
         Intent i = new Intent(this, getClass());
-        i.putExtra(Action.KEY_TYPE, Action.TransitionType.fade);
+        i.putExtra("Key", "Fade");
         startActivity(i, options.toBundle());
     }
+
     public void swapViews(View view) {
         final ImageView Button1 = findViewById(R.id.imageButton);
         final ImageView Button2 = findViewById(R.id.imageButton2);
@@ -86,13 +83,8 @@ public class MainActivity extends AppCompatActivity {
                 Pair.create(Button3, "but3"),
                 Pair.create(Button2, "but2"),
                 Pair.create(Button1, "but1")
-                );
+        );
         startActivity(intent, options.toBundle());
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
 }
